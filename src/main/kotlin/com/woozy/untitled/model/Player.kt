@@ -1,6 +1,6 @@
 package com.woozy.untitled.model
 
-import com.woozy.untitled.model.enums.UserRoleEnum
+import com.woozy.untitled.model.enums.PlayerRoleEnum
 import jakarta.persistence.*
 
 @Entity
@@ -17,7 +17,7 @@ class Player(
 
     @Column(name = "PLAYER_ROLE")
     @Enumerated(value = EnumType.STRING)
-    var role: UserRoleEnum,
+    var role: PlayerRoleEnum,
 
     @Column(name = "PLAYER_LEVEL")
     var level: Long = 1L,

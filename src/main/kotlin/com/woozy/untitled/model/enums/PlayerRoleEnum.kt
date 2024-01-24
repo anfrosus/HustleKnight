@@ -1,5 +1,5 @@
 package com.woozy.untitled.model.enums
 
-enum class UserRoleEnum {
+enum class PlayerRoleEnum {
     REGULAR, PREMIUM
 }

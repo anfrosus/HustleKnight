@@ -1,7 +1,7 @@
 package com.woozy.untitled.dto.request
 
 import com.woozy.untitled.model.Player
-import com.woozy.untitled.model.enums.UserRoleEnum
+import com.woozy.untitled.model.enums.PlayerRoleEnum
 
 data class PlayerRequestDto(
     //TODO: VALIDATION
@@ -15,7 +15,7 @@ fun PlayerRequestDto.toEntity(): Player{
         email = this.email,
         password = this.password,
         name = this.name,
-        role = UserRoleEnum.REGULAR
+        role = PlayerRoleEnum.REGULAR
     )
 }
 

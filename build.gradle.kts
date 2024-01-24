@@ -29,6 +29,9 @@ dependencies {
     //Logger
     implementation("org.springframework.boot:spring-boot-starter-logging")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    //H2
+    runtimeOnly("com.h2database:h2")
+
 }
 
 tasks.withType<KotlinCompile> {

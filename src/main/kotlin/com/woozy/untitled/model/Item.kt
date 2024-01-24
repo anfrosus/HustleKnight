@@ -20,7 +20,7 @@ class Item(
     @Enumerated(EnumType.STRING)
     var type: ItemTypeEnum,
 
-    @Column(name = "ITEM_NAME")
+    @Column(name = "ITEM_CATEGORY")
     @Enumerated(EnumType.STRING)
     var category: ItemCategoryEnum
 

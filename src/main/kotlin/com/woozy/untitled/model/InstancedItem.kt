@@ -12,28 +12,28 @@ class InstancedItem(
     @JoinColumn(name = "PLAYER_ID")
     var player: Player,
 
-    @Column(name = "INSTANCED_ITEM_NAME")
+    @Column(name = "ITEM_NAME")
     var name: String,
 
-    @Column(name = "INSTANCED_ITEM_ATTR_NAME")
+    @Column(name = "ITEM_ATTR_NAME")
     var attrName: String,
 
-    @Column(name = "INSTANCED_ITEM_VALUE")
+    @Column(name = "ITEM_ATTR_VALUE")
     var attrValue: Long,
 
-    @Column(name = "INSTANCED_ITEM_TYPE")
+    @Column(name = "ITEM_TYPE")
     @Enumerated(EnumType.STRING)
     var type: ItemTypeEnum,
 
-    @Column(name = "INSTANCED_ITEM_NAME")
+    @Column(name = "ITEM_CATEGORY")
     @Enumerated(EnumType.STRING)
     var category: ItemCategoryEnum,
 
     //equip only
-    @Column(name = "INSTANCED_ITEM_SUCCESS_CNT", nullable = true)
+    @Column(name = "ITEM_SUCCESS_CNT", nullable = true)
     var successCnt: Int,
 
-    @Column(name = "INSTANCED_ITEM_REMAINING_CNT", nullable = true)
+    @Column(name = "ITEM_REMAINING_CNT", nullable = true)
     var remainingCnt: Int,
 
     @Column(name = "INSTANCED_ITEM_ATTR_INCREASE", nullable = true)

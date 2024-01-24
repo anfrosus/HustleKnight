@@ -22,14 +22,14 @@ class Player(
     @Column(name = "PLAYER_LEVEL")
     var level: Long = 1L,
 
+    @Column(name = "PLAYER_AD")
+    var atkDmg: Long = 5L,
+
     @Column(name = "PLAYER_AS")
-    var attSpd: Double = 1.0,
+    var atkSpd: Double = 1.0,
 
     @Column(name = "PLAYER_HP")
     var hitPnt: Long = 10L,
-
-    @Column(name = "PLAYER_AD")
-    var attDmg: Long = 5L,
 
     @Column(name = "PLAYER_MAX_STAGE")
     var maxStage: Long = 1L,

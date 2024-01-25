@@ -32,6 +32,11 @@ dependencies {
     //H2
     runtimeOnly("com.h2database:h2")
 
+    //Coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
+    implementation("org.reactivestreams:reactive-streams:1.0.3")
+    runtimeOnly ("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.1")
 }
 
 tasks.withType<KotlinCompile> {

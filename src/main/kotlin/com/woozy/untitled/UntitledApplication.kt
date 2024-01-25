@@ -1,5 +1,6 @@
 package com.woozy.untitled
 
+import org.hibernate.annotations.processing.SQL
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 

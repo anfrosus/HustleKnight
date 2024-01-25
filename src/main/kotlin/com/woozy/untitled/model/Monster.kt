@@ -7,7 +7,7 @@ import jakarta.persistence.*
 @Table(name = "MONSTER")
 class Monster(
 
-    @Column(name = "MONSTER_NAME")
+    @Column(name = "MONSTER_TYPE")
     @Enumerated(EnumType.STRING)
     var type: MonsterTypeEnum,
 
@@ -27,13 +27,21 @@ class Monster(
     var hitPnt: Long,
 
     @Column(name = "MONSTER_DROP_EXP")
-    var dropExp: Long,
+    var expReward: Long,
 
     @Column(name = "MONSTER_DROP_GOLD")
-    var dropGold: Long
+    var goldReward: Long,
+
+    @OneToMany(mappedBy = "monster", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    var dropTable: MutableList<DropTable> = mutableListOf()
 
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun addDropTable(dropTable: DropTable){
+        this.dropTable.add(dropTable)
+    }
+
 }

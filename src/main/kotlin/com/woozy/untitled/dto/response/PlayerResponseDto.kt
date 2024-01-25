@@ -15,9 +15,9 @@ import com.woozy.untitled.model.enums.PlayerRoleEnum
 
 
 data class PlayerResponseDto(
-    private val email: String,
-    private val name: String,
-    private val role: PlayerRoleEnum,
+    val email: String,
+    val name: String,
+    val role: PlayerRoleEnum,
 ) {
     companion object {
         fun fromEntity(player: Player): PlayerResponseDto {

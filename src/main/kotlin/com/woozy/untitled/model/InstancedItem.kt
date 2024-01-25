@@ -8,7 +8,7 @@ import jakarta.persistence.*
 @Table(name = "INSTANCED_ITEM")
 class InstancedItem(
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PLAYER_ID")
     var player: Player,
 
@@ -19,7 +19,7 @@ class InstancedItem(
     var attrName: String,
 
     @Column(name = "ITEM_ATTR_VALUE")
-    var attrValue: Long,
+    var finalAttrValue: Long,
 
     @Column(name = "ITEM_TYPE")
     @Enumerated(EnumType.STRING)
@@ -31,16 +31,32 @@ class InstancedItem(
 
     //equip only
     @Column(name = "ITEM_SUCCESS_CNT", nullable = true)
-    var successCnt: Int,
+    var successCnt: Int = 0,
 
     @Column(name = "ITEM_REMAINING_CNT", nullable = true)
-    var remainingCnt: Int,
+    var remainingCnt: Int = 0,
 
-    @Column(name = "INSTANCED_ITEM_ATTR_INCREASE", nullable = true)
-    var attrIncrease: Int
+//    @Column(name = "INSTANCED_ITEM_ATTR_INCREASE", nullable = true)
+//    var attrIncrease: Int = 0
 
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+
+    companion object {
+
+        fun create(player: Player, item: Item): InstancedItem {
+            return InstancedItem(
+                player,
+                item.name,
+                item.attrName,
+                item.attrValue,
+                item.type,
+                item.category,
+                remainingCnt = 7
+            )
+        }
+    }
 }

@@ -7,7 +7,17 @@ spring:
       path: /h2
   datasource:
     url: jdbc:h2:mem:db
+  jpa:
 
+    open-in-view: on
+
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+
+    defer-datasource-initialization: true
 
 
 

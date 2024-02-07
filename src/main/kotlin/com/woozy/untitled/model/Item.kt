@@ -1,7 +1,7 @@
 package com.woozy.untitled.model
 
-import com.woozy.untitled.model.enums.ItemCategoryEnum
-import com.woozy.untitled.model.enums.ItemTypeEnum
+import com.woozy.untitled.model.enums.ItemCategory
+import com.woozy.untitled.model.enums.ItemType
 import jakarta.persistence.*
 
 @Entity
@@ -9,6 +9,9 @@ import jakarta.persistence.*
 class Item(
     @Column(name = "ITEM_NAME")
     var name: String,
+
+    @Column(name = "ITEM_REQ_LVL")
+    val reqLevel: Long,
 
     @Column(name = "ITEM_ATTR_NAME")
     var attrName: String,
@@ -18,11 +21,11 @@ class Item(
 
     @Column(name = "ITEM_TYPE")
     @Enumerated(EnumType.STRING)
-    var type: ItemTypeEnum,
+    var type: ItemType,
 
     @Column(name = "ITEM_CATEGORY")
     @Enumerated(EnumType.STRING)
-    var category: ItemCategoryEnum
+    var category: ItemCategory
 
     ) {
     @Id

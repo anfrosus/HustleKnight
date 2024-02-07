@@ -1,6 +1,7 @@
 spring:
   profiles:
     include: secret
+
   h2:
     console:
       enabled: true
@@ -8,6 +9,22 @@ spring:
   datasource:
     url: jdbc:h2:mem:db
 
+  jpa:
+
+    open-in-view: off
+
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+
+    defer-datasource-initialization: true
 
 
 
+logging:
+  level:
+    org:
+      springframework:
+        security: trace

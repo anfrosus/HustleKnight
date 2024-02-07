@@ -3,8 +3,8 @@ package com.woozy.untitled.model
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "DROP_TABLE")
-class DropTable(
+@Table(name = "ITEM_DROP_TABLE")
+class ItemDropTable(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MONSTER_ID")
     var monster: Monster,
@@ -13,7 +13,7 @@ class DropTable(
     @JoinColumn(name = "ITEM_ID")
     var item: Item,
 
-    @Column(name = "DROP_RATE")
+    @Column(name = "ITEM_DROP_RATE")
     var dropRate: Double
 ) {
     @Id
@@ -21,6 +21,6 @@ class DropTable(
     var id: Long? = null
 
     init {
-        monster.addDropTable(this)
+        monster.addItemDropTable(this)
     }
 }

@@ -1,6 +1,6 @@
 package com.woozy.untitled.model
 
-import com.woozy.untitled.model.enums.MonsterTypeEnum
+import com.woozy.untitled.model.enums.MonsterType
 import jakarta.persistence.*
 
 @Entity
@@ -9,7 +9,7 @@ class Monster(
 
     @Column(name = "MONSTER_TYPE")
     @Enumerated(EnumType.STRING)
-    var type: MonsterTypeEnum,
+    var type: MonsterType,
 
     @Column(name = "MONSTER_STAGE")
     var stage: Long,
@@ -33,15 +33,21 @@ class Monster(
     var goldReward: Long,
 
     @OneToMany(mappedBy = "monster", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    var dropTable: MutableList<DropTable> = mutableListOf()
+    var itemDropTable: MutableList<ItemDropTable> = mutableListOf(),
 
+    @OneToOne(mappedBy = "monster" , fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    var goodsDropTable: GoodsDropTable
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    fun addDropTable(dropTable: DropTable){
-        this.dropTable.add(dropTable)
+    fun addItemDropTable(itemDropTable: ItemDropTable){
+        this.itemDropTable.add(itemDropTable)
+    }
+
+    fun addGoodsDropTable(goodsDropTable: GoodsDropTable){
+        this.goodsDropTable = goodsDropTable
     }
 
 }

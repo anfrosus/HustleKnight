@@ -1,6 +1,13 @@
 spring:
   profiles:
-    include: secret
+    include:
+      - secret
+      - test
+
+
+  output:
+    ansi:
+      enabled: always
 
   h2:
     console:
@@ -18,6 +25,8 @@ spring:
       hibernate:
         format_sql: true
         highlight_sql: true
+        hbm2ddl:
+          auto: update
 
     defer-datasource-initialization: true
 

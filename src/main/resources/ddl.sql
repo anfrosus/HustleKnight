@@ -1,0 +1,157 @@
+--
+-- drop table if exists GOODS;
+--
+-- drop table if exists GOODS_DROP_TABLE;
+--
+-- drop table if exists ITEM;
+--
+-- drop table if exists ITEM_DROP_TABLE;
+--
+-- drop table if exists MONSTER;
+--
+-- drop table if exists PLAYER;
+--
+-- drop table if exists PLAYER_GOODS;
+--
+-- drop table if exists PLAYER_ITEM;
+--
+-- drop table if exists RAID_MONSTER;
+--
+-- create table goods (
+--                        id bigint not null auto_increment,
+--                        goods_description varchar(255),
+--                        goods_category enum ('RED_STONE','BLUE_STONE'),
+--                        primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table goods_drop_table (
+--                                   goods_drop_rate float(53),
+--                                   goods_amount bigint,
+--                                   goods_id bigint,
+--                                   id bigint not null auto_increment,
+--                                   monster_id bigint,
+--                                   primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table item (
+--                       id bigint not null auto_increment,
+--                       item_attr_value bigint,
+--                       item_req_lvl bigint,
+--                       item_attr_name varchar(255),
+--                       item_description varchar(255),
+--                       item_name varchar(255),
+--                       item_category enum ('WEAPON','ACCESSORY','ARMOR'),
+--                       primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table item_drop_table (
+--                                  item_drop_rate float(53),
+--                                  id bigint not null auto_increment,
+--                                  item_id bigint,
+--                                  monster_id bigint,
+--                                  primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table monster (
+--                          id bigint not null auto_increment,
+--                          monster_ad bigint,
+--                          monster_drop_exp bigint,
+--                          monster_drop_gold bigint,
+--                          monster_hp bigint,
+--                          monster_level bigint,
+--                          monster_stage bigint,
+--                          monster_name varchar(255),
+--                          monster_type enum ('NORMAL','MUTANT','BOSS'),
+--                          primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table player (
+--                         player_level integer,
+--                         player_ticket integer,
+--                         id bigint not null auto_increment,
+--                         player_ad bigint,
+--                         player_addi_ad bigint,
+--                         player_addi_as bigint,
+--                         player_addi_hp bigint,
+--                         player_as bigint,
+--                         player_cur_stage bigint,
+--                         player_exp bigint,
+--                         player_gold bigint,
+--                         player_hp bigint,
+--                         player_max_stage bigint,
+--                         player_raid_score bigint,
+--                         player_email varchar(255),
+--                         player_name varchar(255),
+--                         player_password varchar(255),
+--                         player_role enum ('REGULAR','PREMIUM'),
+--                         primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table player_goods (
+--                               goods_id bigint,
+--                               id bigint not null auto_increment,
+--                               player_goods_amount bigint,
+--                               player_id bigint,
+--                               player_goods_category enum ('RED_STONE','BLUE_STONE'),
+--                               primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table player_item (
+--                              item_is_equipped bit,
+--                              item_remaining_cnt integer,
+--                              item_success_cnt integer,
+--                              id bigint not null auto_increment,
+--                              item_attr_value bigint,
+--                              item_req_lvl bigint,
+--                              player_id bigint,
+--                              item_attr_name varchar(255),
+--                              item_name varchar(255),
+--                              item_category enum ('WEAPON','ACCESSORY','ARMOR'),
+--                              primary key (id)
+-- ) engine=InnoDB;
+--
+-- create table raid_monster (
+--                               id bigint not null auto_increment,
+--                               raid_monster_hp bigint,
+--                               raid_monster_resistance bigint,
+--                               raid_monster_name varchar(255),
+--                               primary key (id)
+-- ) engine=InnoDB;
+--
+-- alter table goods_drop_table
+--     add constraint UK_at4e2i1u4yxjtjxf7a830f9l6 unique (monster_id);
+--
+-- alter table goods_drop_table
+--     add constraint FKqlti1tb3urf4wccqnffsm2ykh
+--         foreign key (goods_id)
+--             references goods (id);
+--
+-- alter table goods_drop_table
+--     add constraint FKpiotn2jphkjkbkbex8cyfrqg1
+--         foreign key (monster_id)
+--             references monster (id);
+--
+-- alter table item_drop_table
+--     add constraint FKmgiblt9hj8lij982belgr5ylh
+--         foreign key (item_id)
+--             references item (id);
+--
+-- alter table item_drop_table
+--     add constraint FKbsdns5ebxyfetxq8cbdxp1vf1
+--         foreign key (monster_id)
+--             references monster (id);
+--
+-- alter table player_goods
+--     add constraint FK68vax0pq1mokgvkp49fxlqo05
+--         foreign key (goods_id)
+--             references goods (id);
+--
+-- alter table player_goods
+--     add constraint FKscapvvfr0o3ed0tmemr0tpic9
+--         foreign key (player_id)
+--             references player (id);
+--
+-- alter table player_item
+--     add constraint FKrxheav2cj3fyb0nwp4gw4ip7x
+--         foreign key (player_id)
+--             references player (id);

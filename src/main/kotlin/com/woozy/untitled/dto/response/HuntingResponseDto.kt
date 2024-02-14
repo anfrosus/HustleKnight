@@ -5,7 +5,8 @@ data class HuntingResponseDto(
     val expectedTimeSeconds: Long,
     val encounteredMonster: String,
     val expectedGold: Long,
-    val expectedExp: Long
+    val expectedExp: Long,
+    val expectedDrop: DropResponseDto,
 ) {
 
 }

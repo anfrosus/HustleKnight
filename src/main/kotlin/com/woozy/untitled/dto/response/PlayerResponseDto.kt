@@ -3,23 +3,12 @@ package com.woozy.untitled.dto.response
 import com.woozy.untitled.model.Player
 import com.woozy.untitled.model.enums.PlayerRole
 
-//
-//abstract class Domain<D, E> {
-//    fun toEntity() {
-//        return E
-//    }
-//    fun fromEntity() {
-//        return D
-//    }
-//}
-
-
 data class PlayerResponseDto(
     val id: Long,
     val email: String,
     val role: PlayerRole,
     val name: String,
-    val level: Long,
+    val level: Int,
     val atkDmg: Long,
     val atkSpd: Long,
     val hitPnt: Long,
@@ -54,11 +43,3 @@ data class PlayerResponseDto(
         }
     }
 }
-
-//fun PlayerResponseDto.fromEntity(player: Player): PlayerResponseDto {
-//    return PlayerResponseDto(
-//        email = player.email,
-//        name = player.name,
-//        role = player.role
-//    )
-//}

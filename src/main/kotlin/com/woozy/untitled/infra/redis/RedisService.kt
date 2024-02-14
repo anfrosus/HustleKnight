@@ -3,63 +3,78 @@ package com.woozy.untitled.infra.redis
 import com.woozy.untitled.dto.BattleInfo
 import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
+import com.woozy.untitled.model.enums.MaxValues
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import java.util.concurrent.TimeUnit
 
 @Service
 class RedisService(
-    private val redisTemplate: RedisTemplate<Long, BattleInfo>
+    private val battleRedisTemplate: RedisTemplate<Long, BattleInfo>,
+    private val emitterRedisTemplate: RedisTemplate<String, Boolean>
 ) {
+    fun stopBattle(battleId: Long) {
+        val result = this.getBattleInfo(battleId)
+        result.isStopped = true
+        battleRedisTemplate.opsForValue().set(battleId, result)
+    }
 
     fun saveBattleInfo(battleInfo: BattleInfo) {
-        println(battleInfo.battleId)
-        when (redisTemplate.opsForValue().setIfAbsent(battleInfo.battleId, battleInfo)) {
-            true -> {
-                println("저장성공!!!!")
-            }
-            //이미 키가 저장되어 있을 때
-            false -> {
-                println("이미 키가있으!!!!")
-                //TODO: Change Exception
-                throw CustomException(ErrorCode.MONSTER_NOT_FOUND)
-            }
-            //TODO: change Exception
-            null -> throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
+        when (battleRedisTemplate.opsForValue().setIfAbsent(
+            battleInfo.battleId,
+            battleInfo,
+            MaxValues.MAX_BATTLE_SAVED_MINUTE.value,
+            TimeUnit.MINUTES
+        )) {
+            true -> {}
+            false -> throw CustomException(ErrorCode.REDIS_BATTLE_NOT_COMPLETE)
+            null -> throw CustomException(ErrorCode.REDIS_CAN_NOT_SAVE)
         }
+
     }
 
     fun getBattleInfo(battleId: Long): BattleInfo {
-        val result = redisTemplate.opsForValue().get(battleId)
-        //TODO: change Exception
-            ?: throw CustomException(ErrorCode.MONSTER_NOT_FOUND)
+        val result = battleRedisTemplate.opsForValue().get(battleId)
+            ?: throw CustomException(ErrorCode.REDIS_BATTLE_NOT_FOUND)
 
         return result
     }
 
     fun checkBattleInProgress(battleId: Long) {
-
-//        redisTemplate.exec()
-        if (redisTemplate.hasKey(battleId)) {
-            throw CustomException(ErrorCode.ITEM_EQUIPPED)
-            //TODO: changeException
+        if (battleRedisTemplate.hasKey(battleId)) {
+            throw CustomException(ErrorCode.REDIS_BATTLE_NOT_COMPLETE)
         }
-
     }
 
     fun deleteBattleInfo(battleId: Long) {
-        if (!redisTemplate.delete(battleId)) {
-            //TODO: ChangeException
-            throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
+        if (!battleRedisTemplate.delete(battleId)) {
+            throw CustomException(ErrorCode.REDIS_BATTLE_NOT_FOUND)
         }
     }
 
-    @Transactional(readOnly = true)
-    fun getValue() {
-        val result = redisTemplate.opsForValue().get(1L)
-        //TODO: change Exception
-            ?: throw CustomException(ErrorCode.MONSTER_NOT_FOUND)
+    fun setEmitterExistence(playerId: Long) {
+        val key = emitterKey(playerId)
+        when (emitterRedisTemplate.opsForValue().setIfAbsent(key, true)) {
+            true -> {}
+            false -> throw CustomException(ErrorCode.REDIS_EMITTER_ALREADY_EXIST)
+            null -> throw CustomException(ErrorCode.REDIS_CAN_NOT_SAVE)
+        }
     }
 
+    fun deleteEmitterExistence(playerId: Long) {
+        val key = emitterKey(playerId)
+        emitterRedisTemplate.delete(key)
+    }
 
+    fun checkEmitterExistence(playerId: Long) {
+        val key = emitterKey(playerId)
+        if (!emitterRedisTemplate.hasKey(key)) {
+            throw CustomException(ErrorCode.EMITTER_NOT_FOUND)
+        }
+    }
+
+    private fun emitterKey(playerId: Long): String {
+        val EMITTER_KEY_PREFIX = "Emitter"
+        return EMITTER_KEY_PREFIX + playerId.toString()
+    }
 }

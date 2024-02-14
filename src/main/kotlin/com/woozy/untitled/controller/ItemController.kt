@@ -4,10 +4,7 @@ import com.woozy.untitled.dto.request.UpgradeRequest
 import com.woozy.untitled.dto.response.PlayerGoodsResponseDto
 import com.woozy.untitled.dto.response.PlayerItemResponseDto
 import com.woozy.untitled.dto.response.PlayerResponseDto
-import com.woozy.untitled.infra.rabbit.MessagePublisher
-import com.woozy.untitled.infra.redis.RedisService
 import com.woozy.untitled.infra.security.UserPrincipal
-import com.woozy.untitled.service.BattleService
 import com.woozy.untitled.service.ItemService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -20,22 +17,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/players")
 class ItemController(
-    private val itemService: ItemService,
-    private val messagePublisher: MessagePublisher,
-    private val battleService: BattleService,
-    private val redisService: RedisService
+    private val itemService: ItemService
     ) {
-    @GetMapping("/test")
-    fun test(){
-//        messagePublisher.sendDelayedMessage(4000, "메세징>_<")
-    }
-
-//    @GetMapping("test1")
-//    fun test1(){
-//        redisService.saveBattleInfo()
-//        redisService.getValue()
-//    }
-
     @Operation(summary = "장착/해제 하기")
     @PutMapping("/{playerId}/items/{itemId}")
     fun equip(
@@ -43,9 +26,10 @@ class ItemController(
         @PathVariable itemId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<PlayerResponseDto> {
-        return ResponseEntity
+        val response = itemService.updateEquipped(playerId, itemId, userPrincipal.id)
+            return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(itemService.updateEquipped(playerId, itemId, userPrincipal))
+            .body(response)
     }
 
     //TODO: 합치기
@@ -55,22 +39,20 @@ class ItemController(
         @PathVariable playerId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
         ): ResponseEntity<List<PlayerItemResponseDto>> {
+        val response = itemService.getInventory(playerId, userPrincipal.id)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(
-                itemService.getInventory(playerId, userPrincipal)
-            )
+            .body(response)
     }
 
     //TODO: 합치기
     @Operation(summary = "장비창")
     @GetMapping("/{playerId}/items/1")
     fun getEquipped(@PathVariable playerId: Long): ResponseEntity<List<PlayerItemResponseDto>> {
+        val result = itemService.getEquipped(playerId)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(
-                itemService.getEquipped(playerId)
-            )
+            .body(result)
     }
 
     //TODO: QueryParam으로 받아도 되지않나?
@@ -82,20 +64,22 @@ class ItemController(
         @RequestBody upgradeRequest: UpgradeRequest,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<PlayerItemResponseDto> {
+        val result = itemService.upgradeItem(playerId, itemId, upgradeRequest, userPrincipal.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(itemService.upgradeItem(playerId, itemId, upgradeRequest, userPrincipal))
+            .body(result)
     }
 
     @Operation(summary = "분해하기")
     @PutMapping("/{playerId}/items/{itemId}/dismantling")
-    fun dismantle(
+    fun disassemble(
         @PathVariable playerId: Long,
         @PathVariable itemId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<PlayerGoodsResponseDto>{
+        val result = itemService.disassemble(playerId, itemId, userPrincipal.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(itemService.deletePlayerItemAndCreatePlayerGoods(playerId, itemId, userPrincipal))
+            .body(result)
     }
 }

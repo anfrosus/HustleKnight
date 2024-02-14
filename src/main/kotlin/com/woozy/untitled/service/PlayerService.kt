@@ -9,12 +9,11 @@ import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
 import com.woozy.untitled.infra.security.UserPrincipal
 import com.woozy.untitled.infra.security.jwt.JwtPlugin
-import com.woozy.untitled.model.PlayerGoods
 import com.woozy.untitled.model.Player
-import com.woozy.untitled.repository.PlayerGoodsRepository
+import com.woozy.untitled.model.PlayerGoods
 import com.woozy.untitled.repository.GoodsRepository
+import com.woozy.untitled.repository.PlayerGoodsRepository
 import com.woozy.untitled.repository.PlayerRepository
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -55,16 +54,16 @@ class PlayerService(
     }
 
     @Transactional(readOnly = true)
-    fun getPlayer(playerId: Long, userPrincipal: UserPrincipal): PlayerResponseDto {
-        ServiceUtil.checkPlayerId(playerId, userPrincipal)
+    fun getPlayer(playerId: Long, idFromToken: Long): PlayerResponseDto {
+        ServiceUtil.checkAuth(playerId, idFromToken)
         val player = playerRepository.findByIdOrNull(playerId)
             ?: throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
         return PlayerResponseDto.fromEntity(player)
     }
 
     @Transactional(readOnly = true)
-    fun getPlayerGoods(playerId: Long, userPrincipal: UserPrincipal): List<PlayerGoodsResponseDto> {
-        ServiceUtil.checkPlayerId(playerId, userPrincipal)
+    fun getPlayerGoods(playerId: Long, idFromToken: Long): List<PlayerGoodsResponseDto> {
+        ServiceUtil.checkAuth(playerId, idFromToken)
         val playerGoodsList = playerGoodsRepository.findPlayerGoodsByPlayerId(playerId)
         return playerGoodsList.map {
             PlayerGoodsResponseDto.fromEntity(it)
@@ -77,6 +76,7 @@ class PlayerService(
             PlayerGoods(
                 player = player,
                 goods = it,
+                category = it.category,
                 amount = 0
             )
         }.toList()

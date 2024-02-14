@@ -8,7 +8,6 @@ class Combatant {
     var atkDmg: Long
     var hitPnt: Long
     var isPlayer: Boolean
-    var isWinner: Boolean = false
 
     constructor(player: Player) {
         name = player.name

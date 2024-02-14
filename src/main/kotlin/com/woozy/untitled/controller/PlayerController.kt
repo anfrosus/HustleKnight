@@ -3,10 +3,10 @@ package com.woozy.untitled.controller
 import com.woozy.untitled.dto.request.HuntRequestDto
 import com.woozy.untitled.dto.request.LoginRequestDto
 import com.woozy.untitled.dto.request.PlayerRequestDto
-import com.woozy.untitled.dto.response.HuntResponseDto
 import com.woozy.untitled.dto.response.HuntingResponseDto
 import com.woozy.untitled.dto.response.PlayerGoodsResponseDto
 import com.woozy.untitled.dto.response.PlayerResponseDto
+import com.woozy.untitled.dto.response.RaidResponseDto
 import com.woozy.untitled.infra.security.UserPrincipal
 import com.woozy.untitled.service.BattleService
 import com.woozy.untitled.service.PlayerService
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*
 class PlayerController(
     private val playerService: PlayerService,
     private val battleService: BattleService
-//    private val oldBattleService: OldBattleService
 ) {
 
     @Operation(summary = "플레이어 등록하기")
@@ -33,9 +32,10 @@ class PlayerController(
     fun registerPlayer(
         @RequestBody @Valid playerRequestDto: PlayerRequestDto
     ): ResponseEntity<PlayerResponseDto> {
+        val result = playerService.createPlayer(playerRequestDto)
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(playerService.createPlayer(playerRequestDto))
+            .body(result)
     }
 
     @Operation(summary = "로그인")
@@ -44,9 +44,10 @@ class PlayerController(
         @RequestBody loginRequestDto: LoginRequestDto,
         response: HttpServletResponse
     ): ResponseEntity<PlayerResponseDto> {
+        val result = playerService.login(loginRequestDto, response)
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(playerService.login(loginRequestDto, response))
+            .body(result)
     }
 
     @Operation(summary = "플레이어 정보 / 스탯창")
@@ -55,9 +56,10 @@ class PlayerController(
         @PathVariable playerId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<PlayerResponseDto> {
+        val result = playerService.getPlayer(playerId, userPrincipal.id)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(playerService.getPlayer(playerId, userPrincipal))
+            .body(result)
     }
 
     @Operation(summary = "플레이어 재화 조회")
@@ -68,7 +70,7 @@ class PlayerController(
     ): ResponseEntity<List<PlayerGoodsResponseDto>>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(playerService.getPlayerGoods(playerId, userPrincipal))
+            .body(playerService.getPlayerGoods(playerId, userPrincipal.id))
     }
 
     @Operation(summary = "사냥하기")
@@ -79,7 +81,31 @@ class PlayerController(
         @PathVariable playerId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<HuntingResponseDto> {
-        val result = battleService.hunt(huntRequestDto, playerId, userPrincipal)
+        val result = battleService.hunt(huntRequestDto, playerId, userPrincipal.id)
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(result)
+    }
+
+    @Operation(summary = "전투 중단")
+    @PutMapping("/{playerId}/hunts")
+    fun abort(
+        @PathVariable playerId: Long,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal
+    ): ResponseEntity<String> {
+        val result = battleService.abort(playerId, userPrincipal.id)
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(result)
+    }
+
+    @Operation(summary = "")
+    @PostMapping("{playerId}/raid/{raidMonsterId}")
+    fun raid(@PathVariable playerId: Long,
+             @PathVariable raidMonsterId: Long,
+             @AuthenticationPrincipal userPrincipal: UserPrincipal
+    ): ResponseEntity<RaidResponseDto>{
+        val result = battleService.raid(playerId, raidMonsterId, userPrincipal.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(result)

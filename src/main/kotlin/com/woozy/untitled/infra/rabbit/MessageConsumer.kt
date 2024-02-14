@@ -1,7 +1,7 @@
 package com.woozy.untitled.infra.rabbit
 
 import com.woozy.untitled.infra.redis.RedisService
-import com.woozy.untitled.infra.sse.SseController
+import com.woozy.untitled.infra.sse.SseService
 import com.woozy.untitled.service.BattleService
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Service
@@ -10,27 +10,26 @@ import org.springframework.stereotype.Service
 class MessageConsumer(
     private val redisService: RedisService,
     private val battleService: BattleService,
-    private val sseController: SseController
+    private val sseService: SseService
 ) {
 
     @RabbitListener(queues = ["test-queue"])
     fun handleMessage(battleId: Long) {
-        println("컨슘!!!!!!!!!!!!!!!!")
         try {
             val battleInfo = redisService.getBattleInfo(battleId)
             if (!battleInfo.isStopped) {
                 //전투가 중단되지 않았다면
-                battleService.applyBattleResult(battleInfo)
+                val dropResponseDto = battleService.applyBattleResult(battleInfo)
+                battleInfo.dropped = dropResponseDto
 
-                //TODO: 이벤트 발생시켜 + 드랍 템도 같이 리턴 해야겠다이
-                sseController.pushBattleResult(battleId, battleInfo.battleDto)
+                redisService.checkEmitterExistence(battleId)
+                sseService.pushBattleResult(battleId, battleInfo)
             }
-
-            redisService.deleteBattleInfo(battleId)
         } catch (e: Exception) {
-            println(battleId)
-                //TODO: consume이 실패하지 않도록.
+                //TODO: 실패한 battle에 대한 정보를 따로 저장하던지 의 조치가 필요
 //            log.error(e)
+        } finally {
+            redisService.deleteBattleInfo(battleId)
         }
 
 

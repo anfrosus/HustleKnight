@@ -29,8 +29,8 @@
 //    private val playerItemRepository: PlayerItemRepository,
 //    private val playerGoodsRepository: PlayerGoodsRepository
 //) {
-//    suspend fun hunt(huntRequestDto: HuntRequestDto, playerId: Long, userPrincipal: UserPrincipal): HuntResponseDto {
-////        ServiceUtil.checkPlayerId(playerId, userPrincipal)
+//    suspend fun hunt(huntRequestDto: HuntRequestDto, playerId: Long, idFromToken: Long): HuntResponseDto {
+////        ServiceUtil.checkPlayerId(playerId, userPrincipal.id)
 //        val player = playerRepository.findByIdOrNull(playerId)
 //            ?: throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
 //

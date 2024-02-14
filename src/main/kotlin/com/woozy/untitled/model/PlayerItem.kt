@@ -3,52 +3,45 @@ package com.woozy.untitled.model
 import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
 import com.woozy.untitled.model.enums.ItemCategory
-import com.woozy.untitled.model.enums.ItemType
 import com.woozy.untitled.model.enums.ItemUpgradeCategory
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "INSTANCED_ITEM")
+@Table(name = "PLAYER_ITEM")
 class PlayerItem(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PLAYER_ID")
     var player: Player,
 
-    @Column(name = "ITEM_NAME")
-    var name: String,
-
-    @Column(name = "ITEM_REQ_LVL")
-    val reqLevel: Long,
-
-    @Column(name = "ITEM_ATTR_NAME")
-    var attrName: String,
-
-    @Column(name = "ITEM_ATTR_VALUE")
-    var finalAttrValue: Long,
-
-    @Column(name = "ITEM_TYPE")
-    @Enumerated(EnumType.STRING)
-    var type: ItemType,
+//    @Column(name = "ITEM_TYPE")
+//    @Enumerated(EnumType.STRING)
+//    var type: ItemType,
 
     @Column(name = "ITEM_CATEGORY")
     @Enumerated(EnumType.STRING)
     var category: ItemCategory,
 
-//    @Column(name = "ITEM_QUANTITY")
-//    var quantity: Long,
+    @Column(name = "ITEM_NAME")
+    var name: String,
+
+    @Column(name = "ITEM_REQ_LVL")
+    var reqLevel: Long,
+
+    @Column(name = "ITEM_ATTR_NAME")
+    var attrName: String = category.attrName,
+
+    @Column(name = "ITEM_ATTR_VALUE")
+    var finalAttrValue: Long,
 
     @Column(name = "ITEM_SUCCESS_CNT")
     var successCnt: Int = 0,
 
     @Column(name = "ITEM_REMAINING_CNT")
-    var remainingCnt: Int,
+    var remainingCnt: Int = category.upgradeableCnt,
 
     @Column(name = "ITEM_IS_EQUIPPED")
     var isEquipped: Boolean = false
-
-//    @Column(name = "INSTANCED_ITEM_ATTR_INCREASE", nullable = true)
-//    var attrIncrease: Int = 0
 
 ) {
     @Id
@@ -66,7 +59,6 @@ class PlayerItem(
             throw CustomException(ErrorCode.ITEM_ZERO_REMAINING)
         }
     }
-
     fun checkUnequipped(){
         if(this.isEquipped){
             throw CustomException(ErrorCode.ITEM_EQUIPPED)
@@ -80,7 +72,15 @@ class PlayerItem(
         this.remainingCnt--
     }
 
-    fun stoneWhenDismantle(): Long{
+    fun getStoneWhenDisassemble(): Long{
         return reqLevel + (successCnt * 1)
+    }
+
+    fun equip() {
+        this.isEquipped = true
+    }
+
+    fun unEquip(){
+        this.isEquipped = false
     }
 }

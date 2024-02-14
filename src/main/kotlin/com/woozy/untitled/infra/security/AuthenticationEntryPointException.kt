@@ -26,7 +26,5 @@ class AuthenticationEntryPointException: AuthenticationEntryPoint {
         response.characterEncoding = "UTF-8"
         response.writer.write(
             ObjectMapper().writeValueAsString(ErrorResponse(e)))
-        println(authException.message)
-        println(authException.stackTraceToString())
     }
 }

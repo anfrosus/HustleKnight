@@ -7,7 +7,6 @@ import com.woozy.untitled.dto.response.PlayerResponseDto
 import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
 import com.woozy.untitled.infra.security.UserPrincipal
-import com.woozy.untitled.repository.PlayerGoodsRepository
 import com.woozy.untitled.repository.PlayerItemRepository
 import com.woozy.untitled.repository.PlayerRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -18,48 +17,47 @@ import org.springframework.transaction.annotation.Transactional
 class ItemService(
     private val playerRepository: PlayerRepository,
     private val playerItemRepository: PlayerItemRepository,
-    private val playerGoodsRepository: PlayerGoodsRepository
 ) {
 
     //TODO: 인벤토리랑 equipped 합쳐
     @Transactional(readOnly = true)
-    fun getInventory(playerId: Long, userPrincipal: UserPrincipal): List<PlayerItemResponseDto> {
-        ServiceUtil.checkPlayerId(playerId, userPrincipal)
-        val inventory = playerItemRepository.findPlayerItemsByPlayerId(playerId)
+    fun getInventory(playerId: Long, idFromToken: Long): List<PlayerItemResponseDto> {
+        ServiceUtil.checkAuth(playerId, idFromToken)
+        val inventory = playerItemRepository.findByPlayerId(playerId)
         return inventory.map { PlayerItemResponseDto.fromEntity(it) }.toList()
     }
 
     @Transactional(readOnly = true)
     fun getEquipped(playerId: Long): List<PlayerItemResponseDto> {
-        //TODO: checkPlayer
-        val equipped = playerItemRepository.findPlayerItemsByPlayerIdAndEquippedIsTrue(playerId)
+        //TODO 합쳐질 것
+        val equipped = playerItemRepository.findByPlayerIdAndEquippedIsTrue(playerId)
         return equipped.map {
             PlayerItemResponseDto.fromEntity(it)
         }.toList()
     }
 
     @Transactional
-    fun updateEquipped(playerId: Long, selectedItemId: Long, userPrincipal: UserPrincipal): PlayerResponseDto {
-        ServiceUtil.checkPlayerId(playerId, userPrincipal)
+    fun updateEquipped(playerId: Long, selectedItemId: Long, idFromToken: Long): PlayerResponseDto {
+        ServiceUtil.checkAuth(playerId, idFromToken)
         val player = playerRepository.findByIdOrNull(playerId)
             ?: throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
-        //isEquipped 와 category 로 먼저장착한 아이템이 있는지 확인
+
+        // isEquipped 와 category 로 먼저장착한 아이템이 있는지 확인
         val selectedItem = playerItemRepository.findByIdOrNull(selectedItemId)
             ?: throw CustomException(ErrorCode.ITEM_NOT_FOUND)
-        //해제라면 ? selectedItem 이 isEquipped 면 해제하면 되지 않나
+
+        // 장착 해제
         if (selectedItem.isEquipped) {
             player.takeOff(selectedItem)
-        } else {
-            //장착이라면? 이미끼고있는 아이템이 있다면 해제
-            val equippedItem = playerItemRepository.findPlayerItemsByPlayerIdAndEquippedIsTrue(playerId)
-            equippedItem.forEach {
-                if (selectedItem.type == it.type) {
-                    player.takeOff(it)
-                }
-            }
-            player.putOn(selectedItem)
-
+            return PlayerResponseDto.fromEntity(player)
         }
+
+        val equippedItem = playerItemRepository.findByPlayerIdAndCategory(playerId, selectedItem.category)
+        if (equippedItem != null) {
+            player.takeOff(equippedItem)
+        }
+        player.putOn(selectedItem)
+
         return PlayerResponseDto.fromEntity(player)
     }
 
@@ -68,54 +66,51 @@ class ItemService(
         playerId: Long,
         itemId: Long,
         upgradeRequest: UpgradeRequest,
-        userPrincipal: UserPrincipal
+        idFromToken: Long
     ): PlayerItemResponseDto {
-        ServiceUtil.checkPlayerId(playerId, userPrincipal)
-        //TODO: isEquipped의 exception / upgrade 같은 logic Entity 내부에??
-        val selectedItem = playerItemRepository.findByIdAndPlayerId(itemId, playerId)
+        ServiceUtil.checkAuth(playerId, idFromToken)
+        val selectedItem = playerItemRepository.findByIdOrNull(itemId)
             ?: throw CustomException(ErrorCode.ITEM_NOT_FOUND)
-        val player = playerRepository.findByIdOrNull(playerId)
-            ?: throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
 
         val upgradeCategory = upgradeRequest.upgradeDetail
-
         selectedItem.checkUpgradable(upgradeCategory.itemCategory)
-        player.consumeGoods(selectedItem.reqLevel, upgradeCategory)
+
+        val player = playerRepository.findByIdFetchPlayerGoods(playerId)
+            ?: throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
+
+        val playerGoods = player.playerGoodsList.first {
+            selectedItem.category.reqStone == it.goods.category
+        }
+
+        playerGoods.consume(selectedItem.reqLevel, upgradeCategory)
 
         selectedItem.upgrade(upgradeCategory)
         return PlayerItemResponseDto.fromEntity(selectedItem)
     }
 
     @Transactional
-    fun deletePlayerItemAndCreatePlayerGoods(playerId: Long, itemId: Long, userPrincipal: UserPrincipal): PlayerGoodsResponseDto {
-        ServiceUtil.checkPlayerId(playerId, userPrincipal)
-        val selectedItem = playerItemRepository.findByIdAndPlayerId(itemId, playerId)
+    fun disassemble(
+        playerId: Long,
+        itemId: Long,
+        idFromToken: Long
+    ): PlayerGoodsResponseDto {
+        ServiceUtil.checkAuth(playerId, idFromToken)
+        val selectedItem = playerItemRepository.findByIdOrNull(itemId)
             ?: throw CustomException(ErrorCode.ITEM_NOT_FOUND)
-
         selectedItem.checkUnequipped()
 
-        val playerGoods =
-            playerGoodsRepository.findByPlayerIdAndGoods_Category(playerId, selectedItem.category.reqStone)
-                ?:throw CustomException(ErrorCode.PLAYER_GOODS_NOT_FOUND)
+        val player = playerRepository.findByIdFetchPlayerGoods(playerId)
+            ?: throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
+
+        val playerGoods = player.playerGoodsList.first {
+            selectedItem.category.reqStone == it.goods.category
+        }
 
         //삭제하고 강화석 얻고
+        playerGoods.increase(selectedItem.getStoneWhenDisassemble())
         playerItemRepository.delete(selectedItem)
-        playerGoods.decrease(selectedItem.stoneWhenDismantle())
+
         return PlayerGoodsResponseDto.fromEntity(playerGoods)
     }
-
-//    private fun consumeGoods(item: PlayerItem, playerGoodsList: List<PlayerGoods>, itemUpgradeCategory: ItemUpgradeCategory) {
-//        val consumeStoneAmount = item.reqLevel * itemUpgradeCategory.consumePrefix * 10
-//        val consumeGoldAmount = item.reqLevel * itemUpgradeCategory.consumePrefix * 150
-//        playerGoodsList.forEach {
-//            if (itemUpgradeCategory.requiredGoods == it.goods.category) {
-//                if (it.amount - consumeStoneAmount < 0 || it.player.gold - consumeGoldAmount < 0) {
-//                    throw CustomException(ErrorCode.UPGRADE_GOODS_NOT_ENOUGH, "필요 강화석: ${consumeStoneAmount}, 필요 골드: ${consumeGoldAmount}")
-//                }
-//                it.amount -= consumeStoneAmount
-//                it.player.gold -= consumeGoldAmount
-//            }
-//        }
-//    }
 
 }

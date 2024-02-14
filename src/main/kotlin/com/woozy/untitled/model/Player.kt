@@ -1,12 +1,11 @@
 package com.woozy.untitled.model
 
-import com.woozy.untitled.dto.BattleDto
-import com.woozy.untitled.model.enums.PlayerRole
 import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
 import com.woozy.untitled.model.enums.ItemCategory
-import com.woozy.untitled.model.enums.ItemUpgradeCategory
+import com.woozy.untitled.model.enums.MaxValues
 import com.woozy.untitled.model.enums.MonsterType
+import com.woozy.untitled.model.enums.PlayerRole
 import jakarta.persistence.*
 
 @Entity
@@ -26,7 +25,7 @@ class Player(
     var role: PlayerRole,
 
     @Column(name = "PLAYER_LEVEL")
-    var level: Long = 1L,
+    var level: Int = 1,
 
     @Column(name = "PLAYER_AD")
     var atkDmg: Long = 5L,
@@ -59,6 +58,12 @@ class Player(
     @Column(name = "PLAYER_GOLD")
     var gold: Long = 0L,
 
+    @Column(name = "PLAYER_TICKET")
+    var ticket: Int = 3,
+
+    @Column(name = "PLAYER_RAID_SCORE")
+    var raidScore: Long = 0,
+
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     var playerGoodsList: MutableList<PlayerGoods> = mutableListOf()
 
@@ -67,25 +72,16 @@ class Player(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    fun earnRewards(battleDto: BattleDto) {
-        exp += battleDto.expectedExp
+    fun earnRewards(monster: Monster) {
+        exp += monster.expReward
         levelUp()
-        gold += battleDto.expectedGold
+        gold += monster.goldReward
     }
 
-//    fun goNextStageIfBoss(monster: Monster) {
-//        if (monster.stage > maxStage) {
-//            throw CustomException(ErrorCode.PLAYER_ILLEGAL_STAGE)
-//        } else if (monster.stage == maxStage && monster.type == MonsterType.BOSS) {
-//            maxStage++
-//            curStage = maxStage
-//        }
-//    }
-
-    fun goNextStageIfBoss(battleDto: BattleDto) {
-        if (battleDto.stage > maxStage) {
+    fun goNextStageIfBoss(monster: Monster) {
+        if (monster.stage > maxStage) {
             throw CustomException(ErrorCode.PLAYER_ILLEGAL_STAGE)
-        } else if (battleDto.stage == maxStage && battleDto.monsterType == MonsterType.BOSS) {
+        } else if (monster.stage == maxStage && monster.type == MonsterType.BOSS) {
             maxStage++
             curStage = maxStage
         }
@@ -93,33 +89,6 @@ class Player(
 
     fun addPlayerGoods(playerGoods: PlayerGoods) {
         playerGoodsList.add(playerGoods)
-    }
-
-    fun takeOff(playerItem: PlayerItem) {
-        //TODO: 그럴일은 없겠지만 음수가 되는지 확인해야하나?
-        when (playerItem.category) {
-            ItemCategory.WEAPON -> {
-                if (addiAtkDmg < playerItem.finalAttrValue) {
-                    throw CustomException(ErrorCode.PLAYER_STATS_CAN_NOT_MINUS)
-                }
-                addiAtkDmg -= playerItem.finalAttrValue
-            }
-
-            ItemCategory.ACCESSORY -> {
-                if (addiAtkSpd < playerItem.finalAttrValue){
-                    throw CustomException(ErrorCode.PLAYER_STATS_CAN_NOT_MINUS)
-                }
-                    addiAtkSpd -= playerItem.finalAttrValue
-            }
-
-            ItemCategory.ARMOR -> {
-                if (addiHitPnt < playerItem.finalAttrValue) {
-                    throw CustomException(ErrorCode.PLAYER_STATS_CAN_NOT_MINUS)
-                }
-                addiHitPnt -= playerItem.finalAttrValue
-            }
-        }
-        playerItem.isEquipped = false
     }
 
     fun putOn(playerItem: PlayerItem) {
@@ -131,17 +100,32 @@ class Player(
             ItemCategory.ACCESSORY -> addiAtkSpd += playerItem.finalAttrValue
             ItemCategory.ARMOR -> addiHitPnt += playerItem.finalAttrValue
         }
-        playerItem.isEquipped = true
+        playerItem.equip()
+    }
+
+    fun takeOff(playerItem: PlayerItem) {
+        if (!playerItem.isEquipped) {
+            throw CustomException(ErrorCode.ITEM_NOT_EQUIPPED)
+        }
+        when (playerItem.category) {
+            ItemCategory.WEAPON -> { addiAtkDmg -= playerItem.finalAttrValue }
+
+            ItemCategory.ACCESSORY -> { addiAtkSpd -= playerItem.finalAttrValue }
+
+            ItemCategory.ARMOR -> { addiHitPnt -= playerItem.finalAttrValue }
+        }
+        playerItem.unEquip()
     }
 
     private fun levelUp() {
-        val requiredExp = level * level * 50
-        while (requiredExp < exp) {
+        var requiredExp = this.requiredExp()
+        while (exp >= requiredExp && level < MaxValues.MAX_LEVEL.value) {
             exp -= requiredExp
             level++
             atkDmg += 1
             atkSpd += 1
             hitPnt += 5
+            requiredExp = this.requiredExp()
         }
     }
 
@@ -152,21 +136,29 @@ class Player(
         curStage = selectedStage
     }
 
-    fun consumeGoods(reqLevel: Long, upgradeCategory: ItemUpgradeCategory) {
-        val playerGoods = playerGoodsList.filter {
-            it.goods.category == upgradeCategory.itemCategory.reqStone
-        }.first()
-
-        val consumeStoneAmount = upgradeCategory.getRequireStoneAmount(reqLevel)
-        val consumeGoldAmount = upgradeCategory.getRequireGoldAmount(reqLevel)
-
-        if (playerGoods.amount - consumeStoneAmount < 0 || this.gold - consumeGoldAmount < 0) {
-            throw CustomException(
-                ErrorCode.PLAYER_GOODS_NOT_ENOUGH,
-                "필요 강화석: ${consumeStoneAmount}, 필요 골드: ${consumeGoldAmount}"
-            )
-        }
-        playerGoods.decrease(consumeStoneAmount)
-        this.gold -= consumeGoldAmount
+    fun requiredExp(): Long{
+        return (level * level * 50).toLong()
     }
+
+    fun earnGoods(goodsDropTable: GoodsDropTable){
+        if (goodsDropTable.isDropped()) {
+            this.playerGoodsList.first{
+                it.category == goodsDropTable.goods.category
+            }.increase(goodsDropTable.amount)
+        }
+    }
+
+    fun consumeTicket(){
+        if (this.ticket <= 0) {
+            throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
+        }
+        ticket -= 1
+    }
+
+    fun earnScore(score: Long) {
+        this.raidScore += score
+    }
+
+
+
 }

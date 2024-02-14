@@ -9,9 +9,10 @@ data class BattleDto(
     var stage: Long,
     var monsterType: MonsterType,
     var hasPlayerWon: Boolean,
+    var turn: Int,
     var delayTimeMilliSeconds: Long,
     var expectedGold: Long,
     var expectedExp: Long,
-    var battleLog: String
+    var battleLog: String,
 ) {
 }

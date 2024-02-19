@@ -27,6 +27,7 @@ class RaidMonster(
         }
         val damage = (player.atkDmg + player.addiAtkDmg) / resistance
         val totalDamage = damage * ((player.atkSpd / 60) + 1)
+
         val prevHp = totalHp
         if (totalHp <= totalDamage) {
             totalHp = 0

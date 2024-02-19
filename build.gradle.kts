@@ -29,6 +29,7 @@ dependencies {
 
     //batch
     implementation ("org.springframework.boot:spring-boot-starter-batch")
+    testImplementation("org.springframework.batch:spring-batch-test:4.3.3")
 
     //redis
     implementation ("org.springframework.boot:spring-boot-starter-data-redis")
@@ -51,7 +52,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-logging")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     //H2
-//    runtimeOnly("com.h2database:h2")
+    runtimeOnly("com.h2database:h2")
 
     //Coroutine
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
@@ -63,7 +64,8 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:4.0.2")
 
     //testContainer
-    testImplementation("org.testcontainers:testcontainers:1.18.3")  // TC 의존성
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")  // TC 의존성
+//    testImplementation("org.testcontainers:testcontainers:1.18.3")
     testImplementation("org.testcontainers:mysql:1.19.3")  // MySQL 테스트 컨테이너 사용
     testImplementation("org.testcontainers:junit-jupiter:1.16.3")  // TC 의존성
     testImplementation("com.mysql:mysql-connector-j:8.2.0")

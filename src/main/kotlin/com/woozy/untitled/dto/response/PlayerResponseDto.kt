@@ -18,7 +18,9 @@ data class PlayerResponseDto(
     val maxStage: Long,
     val curStage: Long,
     val exp: Long,
-    val gold: Long
+    val gold: Long,
+    val ticket: Int,
+    val raidScore: Long
 ) {
     companion object {
         fun fromEntity(player: Player): PlayerResponseDto {
@@ -37,8 +39,9 @@ data class PlayerResponseDto(
                 maxStage = player.maxStage,
                 curStage = player.curStage,
                 exp = player.exp,
-                gold = player.gold
-
+                gold = player.gold,
+                ticket = player.ticket,
+                raidScore = player.raidScore
             )
         }
     }

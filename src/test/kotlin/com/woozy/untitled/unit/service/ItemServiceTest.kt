@@ -81,7 +81,6 @@ class ItemServiceTest {
                 id = 1L
                 addiAtkDmg = givenAttrValue
             }
-        val newAttrValue = 10L
         val equippedItem = PlayerItemFixture.getItemBase(player)
             .apply {
                 id = 1L
@@ -89,6 +88,7 @@ class ItemServiceTest {
                 finalAttrValue = givenAttrValue
                 category = ItemCategory.WEAPON
             }
+        val newAttrValue = 10L
         val selectedItem = PlayerItemFixture.getItemBase(player)
             .apply {
                 id = 2L

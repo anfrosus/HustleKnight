@@ -2,14 +2,11 @@ package com.woozy.untitled.model
 
 import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
-import com.woozy.untitled.model.enums.ItemCategory
-import com.woozy.untitled.model.enums.MaxValues
-import com.woozy.untitled.model.enums.MonsterType
-import com.woozy.untitled.model.enums.PlayerRole
+import com.woozy.untitled.model.enums.*
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "PLAYER")
+@Table(name = "PLAYER", indexes = [Index(name = "IDX_PLAYER_RAID_TIER", columnList = "PLAYER_RAID_TIER")])
 class Player(
     @Column(name = "PLAYER_EMAIL")
     var email: String,
@@ -64,10 +61,17 @@ class Player(
     @Column(name = "PLAYER_RAID_SCORE")
     var raidScore: Long = 0,
 
-    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var playerGoodsList: MutableList<PlayerGoods> = mutableListOf()
+    @Column(name = "PLAYER_RAID_RANK", nullable = true)
+    var raidRank: Long? = null,
 
-) {
+    @Column(name = "PLAYER_RAID_TIER")
+    @Enumerated(EnumType.STRING)
+    var raidTier: RaidTier = RaidTier.UNRANKED,
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var playerGoodsList: MutableList<PlayerGoods> = mutableListOf(),
+
+    ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -108,11 +112,17 @@ class Player(
             throw CustomException(ErrorCode.ITEM_NOT_EQUIPPED)
         }
         when (playerItem.category) {
-            ItemCategory.WEAPON -> { addiAtkDmg -= playerItem.finalAttrValue }
+            ItemCategory.WEAPON -> {
+                addiAtkDmg -= playerItem.finalAttrValue
+            }
 
-            ItemCategory.ACCESSORY -> { addiAtkSpd -= playerItem.finalAttrValue }
+            ItemCategory.ACCESSORY -> {
+                addiAtkSpd -= playerItem.finalAttrValue
+            }
 
-            ItemCategory.ARMOR -> { addiHitPnt -= playerItem.finalAttrValue }
+            ItemCategory.ARMOR -> {
+                addiHitPnt -= playerItem.finalAttrValue
+            }
         }
         playerItem.unEquip()
     }
@@ -136,19 +146,19 @@ class Player(
         curStage = selectedStage
     }
 
-    fun requiredExp(): Long{
+    fun requiredExp(): Long {
         return (level * level * 50).toLong()
     }
 
-    fun earnGoods(goodsDropTable: GoodsDropTable){
+    fun earnGoods(goodsDropTable: GoodsDropTable) {
         if (goodsDropTable.isDropped()) {
-            this.playerGoodsList.first{
+            this.playerGoodsList.first {
                 it.category == goodsDropTable.goods.category
             }.increase(goodsDropTable.amount)
         }
     }
 
-    fun consumeTicket(){
+    fun consumeTicket() {
         if (this.ticket <= 0) {
             throw CustomException(ErrorCode.PLAYER_NOT_FOUND)
         }
@@ -157,8 +167,27 @@ class Player(
 
     fun earnScore(score: Long) {
         this.raidScore += score
+        this.raidTier = RaidTier.getTierByScore(score)
     }
 
+    fun earnGold(gold: Long) {
+        this.gold += gold
+    }
 
+    fun ranking(rank: Long) {
+        this.raidRank = rank
+    }
+
+    fun resetScore() {
+        this.raidScore = 0
+    }
+
+    fun resetTicket() {
+        ticket =
+            when (this.role) {
+                PlayerRole.PREMIUM -> { 5 }
+                PlayerRole.REGULAR -> { 3 }
+            }
+    }
 
 }

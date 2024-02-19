@@ -1,6 +1,6 @@
-package com.woozy.untitled.unit.fixture
+package com.hustleknight.app.unit.fixture
 
-import com.woozy.untitled.model.Combatant
+import com.hustleknight.app.model.Combatant
 
 class CombatantFixture {
     companion object {

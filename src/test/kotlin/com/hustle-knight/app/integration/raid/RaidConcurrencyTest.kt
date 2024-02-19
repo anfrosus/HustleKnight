@@ -1,9 +1,9 @@
-package com.woozy.untitled.integration.raid
+package com.hustleknight.app.integration.raid
 
-import com.woozy.untitled.integration.IntegrationTest
-import com.woozy.untitled.repository.PlayerRepository
-import com.woozy.untitled.repository.RaidMonsterRepository
-import com.woozy.untitled.service.BattleService
+import com.hustleknight.app.integration.IntegrationTest
+import com.hustleknight.app.repository.PlayerRepository
+import com.hustleknight.app.repository.RaidMonsterRepository
+import com.hustleknight.app.service.BattleService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

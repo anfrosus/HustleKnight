@@ -1,7 +1,5 @@
 package com.hustleknight.app.model.enums
 
-import com.hustleknight.app.exception.CustomException
-import com.hustleknight.app.exception.ErrorCode
 import kotlin.random.Random
 
 enum class ItemCategory(val upLimit: Int, val reqStone: GoodsCategory, val upgradeableCnt: Int, val attrName: String) {

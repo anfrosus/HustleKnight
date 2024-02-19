@@ -8,5 +8,4 @@ class CustomException(
     constructor(errorCode: ErrorCode, field: String) : this(errorCode){
         this.field = field
     }
-
 }

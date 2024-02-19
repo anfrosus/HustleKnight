@@ -154,16 +154,16 @@ class BattleService(
         return DropResponseDto.fromEntityToDropped(playerItemList, goodsDropTable)
     }
 
-    fun addPlayerGoods(goodsDropTable: GoodsDropTable, player: Player){
-        val playerGoodsList = player.playerGoodsList
-        if (goodsDropTable.isDropped()) {
-            playerGoodsList.map {
-                if (it.goods.category == goodsDropTable.goods.category){
-                    it.increase(goodsDropTable.amount)
-                }
-            }
-        }
-    }
+//    fun addPlayerGoods(goodsDropTable: GoodsDropTable, player: Player){
+//        val playerGoodsList = player.playerGoodsList
+//        if (goodsDropTable.isDropped()) {
+//            playerGoodsList.map {
+//                if (it.goods.category == goodsDropTable.goods.category){
+//                    it.increase(goodsDropTable.amount)
+//                }
+//            }
+//        }
+//    }
 
     private fun createItemInstance(player: Player, itemDropTable: List<ItemDropTable>): List<PlayerItem> {
         val droppedItemList = itemDropTable.mapNotNull {

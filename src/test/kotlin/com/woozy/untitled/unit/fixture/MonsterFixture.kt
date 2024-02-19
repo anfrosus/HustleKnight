@@ -7,7 +7,6 @@ import com.woozy.untitled.model.enums.MonsterType
 import io.mockk.mockk
 
 class MonsterFixture {
-
     companion object {
         fun getMonsterBase(): Monster {
             val goodsDropTable: GoodsDropTable = mockk()

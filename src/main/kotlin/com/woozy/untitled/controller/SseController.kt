@@ -31,7 +31,7 @@ class SseController(
     }
 
     @Operation(summary = "연결 확인")
-    @GetMapping("/sse/check/{playerId}")
+    @GetMapping("/sse/checking/{playerId}")
     fun check(@PathVariable playerId: Long) {
         sseService.checkHasEmitter(playerId)
     }

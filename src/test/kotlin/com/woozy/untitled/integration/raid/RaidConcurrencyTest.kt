@@ -18,19 +18,13 @@ class RaidConcurrencyTest @Autowired constructor(
     private val playerRepository: PlayerRepository
 ): IntegrationTest() {
 
-//    @BeforeEach
-//    fun init() {
-//
-//    }
-
     @Test
-    @DisplayName("레이드 동시성 테스트")
+    @DisplayName("1의 피해를 주는 플레이어 네명이 동시에 레이드를 수행했을 때")
     fun raidConcurrencyTest() {
         //given
         val numberOfThread = 4
         val executor = Executors.newFixedThreadPool(numberOfThread)
         val latch = CountDownLatch(4)
-
 
         //when
         executor.execute {

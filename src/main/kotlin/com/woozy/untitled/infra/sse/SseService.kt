@@ -1,6 +1,5 @@
 package com.woozy.untitled.infra.sse
 
-import com.woozy.untitled.dto.BattleDto
 import com.woozy.untitled.dto.BattleInfo
 import com.woozy.untitled.exception.CustomException
 import com.woozy.untitled.exception.ErrorCode
@@ -18,7 +17,7 @@ class SseService(
 
     private val emitterList = ConcurrentHashMap<Long, SseEmitter>()
     fun createEmitter(playerId: Long): SseEmitter {
-        val emitter = SseEmitter(MaxValues.MAX_CONNECTION_MS.value)
+        val emitter = SseEmitter(MaxValues.MAX_CONNECTION_TIME.value)
         if (this.emitterList[playerId] != null) {
             throw CustomException(ErrorCode.EMITTER_ALREADY_EXIST)
         }
@@ -37,20 +36,6 @@ class SseService(
         }
         return emitter
     }
-
-    fun checkHasEmitter(playerId: Long) {
-        if (!this.emitterList.containsKey(playerId)) {
-            throw CustomException(ErrorCode.EMITTER_NOT_FOUND)
-        }
-        val emitter = this.emitterList[playerId]!!
-        try {
-            emitter.send("check")
-        }catch (e: IOException) {
-            emitter.completeWithError(e)
-            e.printStackTrace()
-        }
-    }
-
     fun deleteEmitter(playerId: Long) {
         val emitter = this.emitterList[playerId]
             ?: throw CustomException(ErrorCode.EMITTER_NOT_FOUND)
@@ -64,6 +49,19 @@ class SseService(
         } finally {
             emitter.complete()
             emitterList.remove(playerId)
+        }
+    }
+
+    fun checkHasEmitter(playerId: Long) {
+        if (!this.emitterList.containsKey(playerId)) {
+            throw CustomException(ErrorCode.EMITTER_NOT_FOUND)
+        }
+        val emitter = this.emitterList[playerId]!!
+        try {
+            emitter.send("Check")
+        }catch (e: IOException) {
+            emitter.completeWithError(e)
+            e.printStackTrace()
         }
     }
 

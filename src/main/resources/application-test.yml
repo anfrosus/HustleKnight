@@ -3,6 +3,10 @@ spring:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     url: jdbc:tc:mysql:8:///
 
+  batch:
+    jdbc:
+      initialize-schema: always
+
   jpa:
     hibernate:
       ddl-auto: create

@@ -1,4 +1,4 @@
-package com.woozy.untitled.integration
+package com.hustleknight.app.integration
 
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest

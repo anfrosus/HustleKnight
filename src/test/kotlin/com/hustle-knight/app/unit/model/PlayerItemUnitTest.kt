@@ -1,11 +1,11 @@
-package com.woozy.untitled.unit.model
+package com.hustleknight.app.unit.model
 
-import com.woozy.untitled.exception.CustomException
-import com.woozy.untitled.exception.ErrorCode
-import com.woozy.untitled.model.enums.ItemCategory
-import com.woozy.untitled.model.enums.ItemUpgradeCategory
-import com.woozy.untitled.unit.fixture.PlayerFixture
-import com.woozy.untitled.unit.fixture.PlayerItemFixture
+import com.hustleknight.app.exception.CustomException
+import com.hustleknight.app.exception.ErrorCode
+import com.hustleknight.app.model.enums.ItemCategory
+import com.hustleknight.app.model.enums.ItemUpgradeCategory
+import com.hustleknight.app.unit.fixture.PlayerFixture
+import com.hustleknight.app.unit.fixture.PlayerItemFixture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

@@ -1,9 +1,9 @@
-package com.woozy.untitled.unit.fixture
+package com.hustleknight.app.unit.fixture
 
-import com.woozy.untitled.model.GoodsDropTable
-import com.woozy.untitled.model.Monster
-import com.woozy.untitled.model.RaidMonster
-import com.woozy.untitled.model.enums.MonsterType
+import com.hustleknight.app.model.GoodsDropTable
+import com.hustleknight.app.model.Monster
+import com.hustleknight.app.model.RaidMonster
+import com.hustleknight.app.model.enums.MonsterType
 import io.mockk.mockk
 
 class MonsterFixture {

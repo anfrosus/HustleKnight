@@ -1,8 +1,8 @@
-package com.woozy.untitled.unit.fixture
+package com.hustleknight.app.unit.fixture
 
-import com.woozy.untitled.model.Player
-import com.woozy.untitled.model.PlayerItem
-import com.woozy.untitled.model.enums.ItemCategory
+import com.hustleknight.app.model.Player
+import com.hustleknight.app.model.PlayerItem
+import com.hustleknight.app.model.enums.ItemCategory
 
 class PlayerItemFixture {
     companion object {

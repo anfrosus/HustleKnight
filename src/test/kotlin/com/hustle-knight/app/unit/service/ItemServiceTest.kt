@@ -1,11 +1,11 @@
-package com.woozy.untitled.unit.service
+package com.hustleknight.app.unit.service
 
-import com.woozy.untitled.model.enums.ItemCategory
-import com.woozy.untitled.repository.PlayerItemRepository
-import com.woozy.untitled.repository.PlayerRepository
-import com.woozy.untitled.service.ItemService
-import com.woozy.untitled.unit.fixture.PlayerFixture
-import com.woozy.untitled.unit.fixture.PlayerItemFixture
+import com.hustleknight.app.model.enums.ItemCategory
+import com.hustleknight.app.repository.PlayerItemRepository
+import com.hustleknight.app.repository.PlayerRepository
+import com.hustleknight.app.service.ItemService
+import com.hustleknight.app.unit.fixture.PlayerFixture
+import com.hustleknight.app.unit.fixture.PlayerItemFixture
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals

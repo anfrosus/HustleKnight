@@ -1,11 +1,11 @@
-package com.woozy.untitled.unit.model
+package com.hustleknight.app.unit.model
 
-import com.woozy.untitled.exception.CustomException
-import com.woozy.untitled.exception.ErrorCode
-import com.woozy.untitled.model.Combatant
-import com.woozy.untitled.unit.fixture.CombatantFixture
-import com.woozy.untitled.unit.fixture.MonsterFixture
-import com.woozy.untitled.unit.fixture.PlayerFixture
+import com.hustleknight.app.exception.CustomException
+import com.hustleknight.app.exception.ErrorCode
+import com.hustleknight.app.model.Combatant
+import com.hustleknight.app.unit.fixture.CombatantFixture
+import com.hustleknight.app.unit.fixture.MonsterFixture
+import com.hustleknight.app.unit.fixture.PlayerFixture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

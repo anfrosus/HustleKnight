@@ -1,8 +1,8 @@
-package com.woozy.untitled.unit.model
+package com.hustleknight.app.unit.model
 
-import com.woozy.untitled.model.RaidMonster
-import com.woozy.untitled.unit.fixture.MonsterFixture
-import com.woozy.untitled.unit.fixture.PlayerFixture
+import com.hustleknight.app.model.RaidMonster
+import com.hustleknight.app.unit.fixture.MonsterFixture
+import com.hustleknight.app.unit.fixture.PlayerFixture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

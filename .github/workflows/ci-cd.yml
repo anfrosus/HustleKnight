@@ -47,6 +47,6 @@ jobs:
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | sudo docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 #            sudo docker-compose -f /home/ubuntu/docker1/docker-compose.yml down
 #            sudo docker-compose -f /home/ubuntu/docker1/docker-compose.yml up -d
-            docker stop woozy9/hustle-knight:latest
-            docker rm woozy9/hustle-knight:latest
-            docker run -d -p 8080:8080 woozy9/hustle-knight:latest
+            sudo docker stop {{ secrets.DOCKER_HUB_REPO }}:latest
+            sudo docker rm {{ secrets.DOCKER_HUB_REPO }}:latest
+            sudo docker run -d -p 8080:8080 {{ secrets.DOCKER_HUB_REPO }}:latest

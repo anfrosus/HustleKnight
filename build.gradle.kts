@@ -28,6 +28,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     //batch
+//    implementation("org.springframework.batch:spring-batch-core:5.1.0")
     implementation ("org.springframework.boot:spring-boot-starter-batch")
     testImplementation("org.springframework.batch:spring-batch-test:4.3.3")
 
@@ -52,7 +53,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-logging")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     //H2
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("com.mysql:mysql-connector-j:8.3.0")
+//    runtimeOnly("com.h2database:h2")
 
     //Coroutine
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")

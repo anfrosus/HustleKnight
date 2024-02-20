@@ -28,7 +28,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     //batch
-//    implementation("org.springframework.batch:spring-batch-core:5.1.0")
+    implementation("org.springframework.batch:spring-batch-core:5.1.0")
     implementation ("org.springframework.boot:spring-boot-starter-batch")
     testImplementation("org.springframework.batch:spring-batch-test:4.3.3")
 

@@ -45,8 +45,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | sudo docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-#            sudo docker-compose -f /home/ubuntu/docker1/docker-compose.yml down
-#            sudo docker-compose -f /home/ubuntu/docker1/docker-compose.yml up -d
             sudo docker stop {{ secrets.DOCKER_HUB_REPO }}:latest
             sudo docker rm {{ secrets.DOCKER_HUB_REPO }}:latest
             sudo docker run -d -p 8080:8080 {{ secrets.DOCKER_HUB_REPO }}:latest
+
+#            sudo docker-compose -f /home/ubuntu/docker1/docker-compose.yml down
+#            sudo docker-compose -f /home/ubuntu/docker1/docker-compose.yml up -d

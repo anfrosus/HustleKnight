@@ -33,30 +33,30 @@ spring:
 
     defer-datasource-initialization: true
 
-#  datasource:
-#    url: ${{ secrets.SPRING_DATASOURCE_URL }}
-#    username: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-#    password: ${{ secrets.SPRING_PASSWORD }}
-#
-#  rabbitmq:
-#    host: ${{ secrets.SPRING_RABBIT_HOST }}
-#    port: 5672
-#    username: ${{ secrets.SPRING_RABBIT_USERNAME }}
-#    password: ${{ secrets.SPRING_PASSWORD }}
-#
-#  data:
-#    redis:
-#      host: ${{ secrets.SPRING_REDIS_HOST }}
-#      port: 6379
-#      password: ${{ secrets.SPRING_PASSWORD }}
-#
-#auth:
-#  jwt:
-#    secret:
-#      key: ${{ secrets.JWT }}
-#    exp:
-#      access: 1
-#      refresh: 12
+  datasource:
+    url: ${{ secrets.SPRING_DATASOURCE_URL }}
+    username: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+    password: ${{ secrets.SPRING_PASSWORD }}
+
+  rabbitmq:
+    host: ${{ secrets.SPRING_RABBIT_HOST }}
+    port: 5672
+    username: ${{ secrets.SPRING_RABBIT_USERNAME }}
+    password: ${{ secrets.SPRING_PASSWORD }}
+
+  data:
+    redis:
+      host: ${{ secrets.SPRING_REDIS_HOST }}
+      port: 6379
+      password: ${{ secrets.SPRING_PASSWORD }}
+
+auth:
+  jwt:
+    secret:
+      key: ${{ secrets.JWT }}
+    exp:
+      access: 1
+      refresh: 12
 
 #logging:
 #  level:

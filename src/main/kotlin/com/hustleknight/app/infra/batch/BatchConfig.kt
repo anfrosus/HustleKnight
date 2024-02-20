@@ -2,7 +2,6 @@ package com.hustleknight.app.infra.batch
 
 import com.hustleknight.app.model.Player
 import org.springframework.batch.core.Job
-import org.springframework.batch.core.JobParameters
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -14,7 +13,6 @@ import org.springframework.batch.core.step.builder.StepBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.task.SimpleAsyncTaskExecutor
-import org.springframework.scheduling.annotation.Scheduled
 
 
 @Configuration
@@ -53,10 +51,8 @@ class BatchConfig(
     }
 
 //    @Scheduled(cron = "0 0 0 * * ?")
-    @Scheduled(fixedRate = 10000)
-//    @Scheduled(cron = "* * * * * *")
-    fun launchJob() {
-        val jobLauncher = settleScoreJobLauncher()
-        jobLauncher.run(settleScoreJob(jobRepository()), JobParameters())
-    }
+//    fun launchJob() {
+//        val jobLauncher = settleScoreJobLauncher()
+//        jobLauncher.run(settleScoreJob(jobRepository()), JobParameters())
+//    }
 }

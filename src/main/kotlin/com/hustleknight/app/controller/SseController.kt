@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 class SseController(
     private val sseService: SseService
 ) {
-
     @Operation(summary = "사냥터 가기 (SSE connect)")
     @GetMapping("/sse/{playerId}")
     fun connect(@PathVariable playerId: Long): SseEmitter {
@@ -35,4 +34,5 @@ class SseController(
     fun check(@PathVariable playerId: Long) {
         sseService.checkHasEmitter(playerId)
     }
+
 }

@@ -21,6 +21,21 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: Set Yaml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application.yml
+        env:
+          spring.datasource.url: ${{ secrets.SPRING_DATASOURCE_URL }}
+          spring.datasource.username: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          spring.datasource.password: ${{ secrets.SPRING_PASSWORD }}
+          spring.rabbitmq.host: ${{ secrets.SPRING_RABBIT_HOST }}
+          spring.rabbitmq.username: ${{ secrets.SPRING_RABBIT_USERNAME }}
+          spring.rabbitmq.password: ${{ secrets.SPRING_PASSWORD }}
+          spring.data.redis.host: ${{ secrets.SPRING_REDIS_HOST }}
+          spring.data.redis.password: ${{ secrets.SPRING_PASSWORD }}
+          auth.jwt.secret.key: ${{ secrets.JWT }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
